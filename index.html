@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CRM Algorithm">
+<title>Crisis Ready Medic — Master Algorithm</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080c14;color:#dde4f0;font-family:Georgia,serif;min-height:100vh;padding-bottom:40px}
+.header{background:linear-gradient(180deg,#0a0f1e,#080c14);border-bottom:1px solid #0f2040;padding:20px 16px 14px}
+.header-inner{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo{font-size:26px;filter:drop-shadow(0 0 8px #3b82f680)}
+.brand{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.22em;color:#3b82f6;font-weight:700}
+.app-title{font-size:17px;font-weight:700;color:#e8eef8;margin-top:2px}
+.tagline{font-size:10px;color:#334155;font-style:italic;font-family:'Courier New',monospace;letter-spacing:.08em}
+.pin-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:24px}
+.pin-box{background:#0a0f1e;border:1px solid #1e3a5f;border-radius:8px;padding:32px 24px;width:100%;max-width:340px;text-align:center}
+.pin-title{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.2em;color:#3b82f6;margin-bottom:20px}
+.pin-input{width:100%;padding:12px;background:#060a12;border:1px solid #1e3a5f;border-radius:4px;color:#cbd5e1;font-size:18px;text-align:center;letter-spacing:.2em;font-family:'Courier New',monospace;outline:none;margin-bottom:10px}
+.pin-btn{width:100%;padding:12px;background:linear-gradient(135deg,#1e40af,#2563eb);border:none;border-radius:4px;color:#fff;font-family:'Courier New',monospace;font-size:12px;font-weight:700;letter-spacing:.12em;cursor:pointer}
+.pin-error{color:#f87171;font-size:11px;font-family:'Courier New',monospace;margin-top:8px}
+.app{display:none}
+.input-section{margin:20px 14px;background:#0a0f1e;border:1px solid #0f2040;border-radius:8px;padding:20px 16px}
+.section-label{font-family:'Courier New',monospace;font-size:9px;letter-spacing:.22em;color:#3b82f6;font-weight:700;margin-bottom:18px}
+.field{margin-bottom:16px}
+.field-label{font-family:'Courier New',monospace;font-size:9px;letter-spacing:.15em;color:#64748b;font-weight:700;display:block;margin-bottom:7px}
+.acuity-row{display:flex;gap:8px}
+.acuity-btn{flex:1;padding:11px 0;border-radius:4px;font-family:'Courier New',monospace;font-size:13px;font-weight:700;letter-spacing:.12em;cursor:pointer;background:#0d1320;border:1px solid #1e3050;color:#334155;transition:all .15s}
+.bls-active{background:#0d2318;border-color:#22c55e;color:#4ade80}
+.als-active{background:#1a1a0a;border-color:#eab308;color:#facc15}
+.cct-active{background:#1a0a0a;border-color:#ef4444;color:#f87171}
+textarea{width:100%;background:#060a12;border:1px solid #0f2040;border-radius:4px;color:#94a3b8;font-family:Georgia,serif;font-size:13px;line-height:1.6;padding:10px 12px;resize:vertical;outline:none}
+.error-msg{color:#f87171;font-size:11px;font-family:'Courier New',monospace;margin-bottom:12px}
+.run-btn{width:100%;padding:14px;background:linear-gradient(135deg,#1e40af,#2563eb);border:none;border-radius:5px;color:#fff;font-family:'Courier New',monospace;font-size:12px;font-weight:700;letter-spacing:.14em;cursor:pointer;box-shadow:0 0 20px #2563eb40;margin-top:4px}
+.run-btn:disabled{background:#0f1e35;border:1px solid #1e3050;color:#475569;cursor:not-allowed;box-shadow:none}
+.loading-note{margin-top:12px;font-size:10px;color:#475569;text-align:center;font-family:'Courier New',monospace;line-height:1.8}
+.results{display:none;margin:14px}
+.export-bar{display:flex;gap:8px;margin-bottom:12px}
+.export-btn{flex:1;padding:9px 8px;background:#0a0f1e;border:1px solid #0f2040;border-radius:4px;color:#60a5fa;font-family:'Courier New',monospace;font-size:10px;cursor:pointer;letter-spacing:.05em}
+.new-call-btn{padding:9px 14px;background:transparent;border:1px solid #1e3050;border-radius:4px;color:#475569;font-family:'Courier New',monospace;font-size:10px;cursor:pointer;letter-spacing:.08em}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:12px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;background:#0a0f1e;border:1px solid #0f2040;border-radius:4px;cursor:pointer;transition:all .15s}
+.tab.active{background:#0f1e35;border-color:#2563eb}
+.tab-icon{font-size:12px;line-height:1}
+.tab-num{font-size:8px;color:#3b82f6;font-family:'Courier New',monospace;font-weight:700;letter-spacing:.06em}
+.tab-name{font-size:7px;color:#475569;font-family:'Courier New',monospace;text-align:center;line-height:1.3}
+.phase-card{background:#0a0f1e;border:1px solid #0f2040;border-radius:8px;padding:18px 14px;margin-bottom:12px;min-height:180px}
+.phase-header{display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #0f2040}
+.phase-icon{font-size:18px;line-height:1;padding-top:2px}
+.phase-title{font-family:'Courier New',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;margin-bottom:3px}
+.phase-desc{font-size:11px;color:#475569;line-height:1.4}
+.reason-box{border-radius:4px;padding:14px;margin-bottom:10px}
+.reason-label{font-family:'Courier New',monospace;font-size:9px;font-weight:700;letter-spacing:.16em;color:#64748b;margin-bottom:8px}
+.reason-text{font-size:12px;line-height:1.75;color:#cbd5e1;margin-bottom:10px}
+.copy-btn{width:100%;padding:9px;background:transparent;border-radius:4px;font-family:'Courier New',monospace;font-size:10px;letter-spacing:.08em;cursor:pointer}
+.matrix-card{background:#06090f;border:1px solid #1e1a2e;border-left:3px solid #dc2626;border-radius:4px;padding:12px 14px;margin-bottom:10px}
+.matrix-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.matrix-num{background:#dc2626;color:#fff;font-family:'Courier New',monospace;font-size:10px;font-weight:700;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.matrix-name{color:#f87171;font-weight:700;font-size:13px}
+.matrix-evidence{font-size:11px;color:#64748b;line-height:1.5;padding-left:30px}
+.evidence-tag{color:#475569;font-family:'Courier New',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;margin-right:4px}
+.filter-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.filter-header{font-size:9px;font-family:'Courier New',monospace;font-weight:700;letter-spacing:.1em;margin-bottom:4px}
+.filter-sub{font-size:9px;color:#334155;margin-bottom:8px;line-height:1.4}
+.pos-card{font-size:11px;line-height:1.4;padding:7px 9px;background:#061410;border:1px solid #14532d;border-left:3px solid #22c55e;border-radius:3px;margin-bottom:5px;color:#86efac}
+.neg-card{font-size:11px;line-height:1.4;padding:7px 9px;background:#0d0814;border:1px solid #2e1065;border-left:3px solid #7c3aed;border-radius:3px;margin-bottom:5px;color:#c4b5fd}
+.question-card{display:flex;gap:12px;background:#06090f;border:1px solid #1e1a0e;border-left:3px solid #d97706;border-radius:4px;padding:12px;margin-bottom:10px}
+.q-num{color:#fbbf24;font-family:'Courier New',monospace;font-weight:700;font-size:12px;flex-shrink:0;padding-top:2px}
+.q-text{color:#e2e8f0;font-size:12px;line-height:1.6;margin-bottom:6px;font-style:italic}
+.q-rationale{font-size:11px;color:#64748b;line-height:1.5}
+.q-tag{color:#475569;font-family:'Courier New',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;margin-right:4px}
+.charte-row{display:flex;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #0f1e35}
+.charte-letter{width:26px;height:26px;background:linear-gradient(135deg,#1e40af,#2563eb);color:#fff;font-family:Georgia,serif;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;border-radius:3px;flex-shrink:0;margin-top:2px}
+.charte-title{font-size:8px;font-family:'Courier New',monospace;font-weight:700;letter-spacing:.16em;color:#2563eb;margin-bottom:4px}
+.charte-text{font-size:12px;color:#94a3b8;line-height:1.7}
+.nav-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nav-btn{padding:9px 16px;background:#0a0f1e;border:1px solid #0f2040;border-radius:4px;color:#3b82f6;font-family:'Courier New',monospace;font-size:11px;cursor:pointer}
+.nav-btn:disabled{color:#1e3050;cursor:not-allowed;border-color:#0a1525}
+.nav-dots{display:flex;gap:6px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;cursor:pointer;transition:background .2s}
+.footer{text-align:center;font-size:9px;color:#1e3050;font-family:'Courier New',monospace;padding:20px 16px 0;line-height:1.6;letter-spacing:.05em}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">⚕</div>
+    <div>
+      <div class="brand">CRISIS READY MEDIC</div>
+      <div class="app-title">Master Algorithm <span style="font-size:11px;color:#475569;font-family:'Courier New',monospace">v2.0</span></div>
+    </div>
+    <div id="acuity-badge" style="margin-left:auto;padding:4px 12px;border-radius:3px;font-size:11px;font-family:'Courier New',monospace;font-weight:700;color:#fff;display:none"></div>
+  </div>
+  <div class="tagline">The resource EMS forgot to give you.</div>
+</div>
+
+<!-- PIN SCREEN -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-box">
+    <div class="pin-title">CRISIS READY MEDIC — ACCESS</div>
+    <input class="pin-input" type="password" id="pin-input" maxlength="6" placeholder="PIN" />
+    <input class="pin-input" type="password" id="api-key-input" maxlength="200" placeholder="API Key (first time only)" style="font-size:11px;letter-spacing:0.05em" />
+    <button class="pin-btn" onclick="checkPin()">ENTER</button>
+    <div class="pin-error" id="pin-error"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="main-app">
+  <div class="input-section" id="input-section">
+    <div class="section-label">TRANSFER INPUT — 5-PHASE AUDIT</div>
+    <div class="field">
+      <label class="field-label">DISPATCH ACUITY LEVEL</label>
+      <div class="acuity-row">
+        <button class="acuity-btn" id="btn-bls" onclick="setAcuity('BLS')">BLS</button>
+        <button class="acuity-btn" id="btn-als" onclick="setAcuity('ALS')">ALS</button>
+        <button class="acuity-btn" id="btn-cct" onclick="setAcuity('CCT')">CCT</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">CHIEF COMPLAINT / DIAGNOSIS</label>
+      <textarea id="complaint" rows="3" placeholder="e.g. 65yo female, open right ankle fracture, external fixation, scheduled ortho follow-up..."></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">SENDING FACILITY INTERVENTIONS / MEDS</label>
+      <textarea id="interventions" rows="3" placeholder="e.g. Heparin gtt 1200 units/hr, Metoprolol 25mg PO, 2L NS, O2 2L NC..."></textarea>
+    </div>
+    <div class="error-msg" id="error-msg"></div>
+    <button class="run-btn" id="run-btn" onclick="runAudit()">▶  EXECUTE MASTER ALGORITHM</button>
+    <div class="loading-note" id="loading-note" style="display:none">
+      ⚖ Building Acuity Justification...<br>
+      ⚠ Mapping Exclusion Matrix...<br>
+      🛡 Generating Pertinent Filter...<br>
+      🔍 Forming Interrogation Protocol...<br>
+      📋 Drafting ACHARTE Narrative...
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="export-bar">
+      <button class="export-btn" onclick="copyReason()">Copy Justification</button>
+      <button class="export-btn" onclick="copyFull()">Copy Full Narrative</button>
+      <button class="new-call-btn" onclick="resetApp()">+ NEW CALL</button>
+    </div>
+    <div class="tabs">
+      <div class="tab active" id="tab-0" onclick="showPhase(0)"><span class="tab-icon">⚖</span><span class="tab-num">Phase 0</span><span class="tab-name">Justification</span></div>
+      <div class="tab" id="tab-1" onclick="showPhase(1)"><span class="tab-icon">⚠</span><span class="tab-num">Phase 1</span><span class="tab-name">Exclusion Matrix</span></div>
+      <div class="tab" id="tab-2" onclick="showPhase(2)"><span class="tab-icon">🛡</span><span class="tab-num">Phase 2</span><span class="tab-name">Pertinent Filter</span></div>
+      <div class="tab" id="tab-3" onclick="showPhase(3)"><span class="tab-icon">🔍</span><span class="tab-num">Phase 3</span><span class="tab-name">Interrogation</span></div>
+      <div class="tab" id="tab-4" onclick="showPhase(4)"><span class="tab-icon">📋</span><span class="tab-num">Phase 4</span><span class="tab-name">ACHARTE</span></div>
+    </div>
+    <div class="phase-card" id="phase-content"></div>
+    <div class="nav-row">
+      <button class="nav-btn" id="prev-btn" onclick="changePhase(-1)" disabled>← Prev</button>
+      <div class="nav-dots" id="nav-dots"></div>
+      <button class="nav-btn" id="next-btn" onclick="changePhase(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Crisis Ready Medic © 2026 &nbsp;·&nbsp; Clinical documentation support only &nbsp;·&nbsp; Not a substitute for paramedic clinical judgment</div>
+
+<script>
+const PIN = "11915";
+let acuity = "";
+let currentPhase = 0;
+let auditResult = null;
+
+function checkPin() {
+  const val = document.getElementById("pin-input").value;
+  const keyInput = document.getElementById("api-key-input").value.trim();
+  if (val === PIN) {
+    if (keyInput) localStorage.setItem("crm_api_key", keyInput);
+    const storedKey = localStorage.getItem("crm_api_key");
+    if (!storedKey) {
+      document.getElementById("pin-error").textContent = "Enter your API key.";
+      return;
+    }
+    document.getElementById("pin-screen").style.display = "none";
+    document.getElementById("main-app").style.display = "block";
+  } else {
+    document.getElementById("pin-error").textContent = "Incorrect PIN.";
+    document.getElementById("pin-input").value = "";
+  }
+}
+
+document.getElementById("pin-input").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") checkPin();
+});
+
+function setAcuity(level) {
+  acuity = level;
+  ["BLS","ALS","CCT"].forEach(l => {
+    const btn = document.getElementById("btn-" + l.toLowerCase());
+    btn.className = "acuity-btn";
+    if (l === level) btn.classList.add(l.toLowerCase() + "-active");
+  });
+}
+
+function buildPrompt() {
+  return `You are an elite Medical Director and Risk Management Auditor. Execute a 5-Phase Defensive Clinical Audit. Return ONLY valid JSON — no markdown, no preamble, no extra text:
+{
+  "phase0": {
+    "justification": "THREE SENTENCES ONLY: S1 — why this acuity level based on one compelling clinical finding and patient context. S2 — exact escalation criteria that would prompt upgrade. S3 — what this acuity level provides that the lower level cannot. Patient-specific. No generic language. Ready to paste into PCR."
+  },
+  "phase1": {
+    "pathologies": [
+      {"name": "...", "evidence_required": "..."},
+      {"name": "...", "evidence_required": "..."},
+      {"name": "...", "evidence_required": "..."}
+    ]
+  },
+  "phase2": {
+    "positives": ["...", "...", "...", "..."],
+    "negatives": ["...", "...", "...", "...", "..."]
+  },
+  "phase3": {
+    "questions": [
+      {"question": "...", "rationale": "..."},
+      {"question": "...", "rationale": "..."},
+      {"question": "...", "rationale": "..."}
+    ]
+  },
+  "phase4": {
+    "appearance": "...",
+    "chief_complaint": "Patient states: [exact words in quotes] — one line only",
+    "reason_for_acuity": "THREE SENTENCES: S1 — one compelling clinical finding justifying acuity. S2 — specific escalation triggers. S3 — capabilities this level provides.",
+    "history": "...",
+    "assessment": "...",
+    "rx_treatment": "...",
+    "transport": "...",
+    "exceptions": "..."
+  }
+}
+
+INPUT:
+- Dispatch Acuity: ${acuity}
+- Chief Complaint / Diagnosis: ${document.getElementById("complaint").value}
+- Sending Interventions / Meds: ${document.getElementById("interventions").value}
+
+Be clinically rigorous and patient-specific. Phase 4 ACHARTE must embed pertinent negatives from Phase 2. Each section carries only what belongs to it — no redundancy between sections.`;
+}
+
+async function runAudit() {
+  if (!acuity) { document.getElementById("error-msg").textContent = "Select acuity level."; return; }
+  if (!document.getElementById("complaint").value.trim()) { document.getElementById("error-msg").textContent = "Enter chief complaint."; return; }
+  if (!document.getElementById("interventions").value.trim()) { document.getElementById("error-msg").textContent = "Enter sending interventions."; return; }
+
+  document.getElementById("error-msg").textContent = "";
+  document.getElementById("run-btn").disabled = true;
+  document.getElementById("loading-note").style.display = "block";
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": localStorage.getItem("crm_api_key") || "",
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: buildPrompt() }]
+      })
+    });
+
+    const data = await res.json();
+    const raw = data.content.map(b => b.text || "").join("");
+    const clean = raw.replace(/```json|```/g, "").trim();
+    auditResult = JSON.parse(clean);
+
+    document.getElementById("input-section").style.display = "none";
+    document.getElementById("results").style.display = "block";
+
+    const badge = document.getElementById("acuity-badge");
+    badge.style.display = "block";
+    badge.textContent = acuity;
+    const colors = { BLS:"#16a34a", ALS:"#ca8a04", CCT:"#dc2626" };
+    badge.style.background = colors[acuity];
+
+    buildDots();
+    showPhase(0);
+
+  } catch(e) {
+    document.getElementById("error-msg").textContent = "Audit failed. Check connection and try again.";
+  }
+
+  document.getElementById("run-btn").disabled = false;
+  document.getElementById("loading-note").style.display = "none";
+}
+
+function showPhase(n) {
+  currentPhase = n;
+  document.querySelectorAll(".tab").forEach((t,i) => {
+    t.className = "tab" + (i === n ? " active" : "");
+  });
+  document.getElementById("prev-btn").disabled = n === 0;
+  document.getElementById("next-btn").disabled = n === 4;
+  buildDots();
+
+  const c = document.getElementById("phase-content");
+  const r = auditResult;
+  const acuityColors = { BLS:"#4ade80", ALS:"#facc15", CCT:"#f87171" };
+  const ac = acuityColors[acuity] || "#60a5fa";
+  const acuityBg = { BLS:"#0d2318", ALS:"#1a1a0a", CCT:"#1a0a0a" };
+  const acuityBorder = { BLS:"#22c55e", ALS:"#eab308", CCT:"#ef4444" };
+
+  if (n === 0) {
+    c.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-icon" style="color:${ac}">⚖</span>
+        <div>
+          <div class="phase-title" style="color:${ac}">ACUITY JUSTIFICATION</div>
+          <div class="phase-desc">Three sentences. Patient-specific. Ready to paste.</div>
+        </div>
+      </div>
+      <div class="reason-box" style="background:${acuityBg[acuity]||'#0d1a2e'};border-left:3px solid ${acuityBorder[acuity]||'#3b82f6'}">
+        <div class="reason-label">${acuity} LEVEL — CLINICAL JUSTIFICATION</div>
+        <div class="reason-text">${r.phase0.justification}</div>
+      </div>
+      <button class="copy-btn" style="border:1px solid ${acuityBorder[acuity]||'#1e3a5f'};color:${ac}" onclick="copyText(auditResult.phase0.justification)">Copy to Clipboard</button>`;
+  }
+  else if (n === 1) {
+    c.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-icon" style="color:#f87171">⚠</span>
+        <div>
+          <div class="phase-title" style="color:#f87171">ACUITY EXCLUSION MATRIX</div>
+          <div class="phase-desc">Rule these out before you roll.</div>
+        </div>
+      </div>
+      ${r.phase1.pathologies.map((p,i) => `
+        <div class="matrix-card">
+          <div class="matrix-top">
+            <div class="matrix-num">${i+1}</div>
+            <div class="matrix-name">${p.name}</div>
+          </div>
+          <div class="matrix-evidence"><span class="evidence-tag">MUST DOCUMENT</span>${p.evidence_required}</div>
+        </div>`).join("")}`;
+  }
+  else if (n === 2) {
+    c.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-icon" style="color:#a78bfa">🛡</span>
+        <div>
+          <div class="phase-title" style="color:#a78bfa">PERTINENT FILTER</div>
+          <div class="phase-desc">Confirm presence. Document absence.</div>
+        </div>
+      </div>
+      <div class="filter-cols">
+        <div>
+          <div class="filter-header" style="color:#86efac">✓ POSITIVES</div>
+          <div class="filter-sub">Confirm — track disease</div>
+          ${r.phase2.positives.map(p => `<div class="pos-card">${p}</div>`).join("")}
+        </div>
+        <div>
+          <div class="filter-header" style="color:#c4b5fd">✗ NEGATIVES</div>
+          <div class="filter-sub">Document absence — legal shield</div>
+          ${r.phase2.negatives.map(p => `<div class="neg-card">${p}</div>`).join("")}
+        </div>
+      </div>`;
+  }
+  else if (n === 3) {
+    c.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-icon" style="color:#fbbf24">🔍</span>
+        <div>
+          <div class="phase-title" style="color:#fbbf24">CHART INTERROGATION</div>
+          <div class="phase-desc">Ask before you load.</div>
+        </div>
+      </div>
+      ${r.phase3.questions.map((q,i) => `
+        <div class="question-card">
+          <div class="q-num">Q${i+1}</div>
+          <div>
+            <div class="q-text">"${q.question}"</div>
+            <div class="q-rationale"><span class="q-tag">WHY: </span>${q.rationale}</div>
+          </div>
+        </div>`).join("")}`;
+  }
+  else if (n === 4) {
+    const p4 = r.phase4;
+    const rows = [
+      ["A","APPEARANCE",p4.appearance],
+      ["C","CHIEF COMPLAINT",p4.chief_complaint],
+      ["H","HISTORY",p4.history],
+      ["A","ASSESSMENT",p4.assessment],
+      ["R","Rx / TREATMENT",p4.rx_treatment],
+      ["T","TRANSPORT",p4.transport],
+      ["E","EXCEPTIONS",p4.exceptions]
+    ];
+    c.innerHTML = `
+      <div class="phase-header">
+        <span class="phase-icon" style="color:#38bdf8">📋</span>
+        <div>
+          <div class="phase-title" style="color:#38bdf8">ACHARTE NARRATIVE</div>
+          <div class="phase-desc">Pertinent negatives embedded. Legal shield active.</div>
+        </div>
+      </div>
+      <div style="background:#0a0f1e;border:1px solid #1e3a6e;border-left:3px solid #3b82f6;border-radius:4px;padding:14px;margin-bottom:12px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;font-weight:700;letter-spacing:.16em;color:#3b82f6;margin-bottom:8px">REASON FOR ${acuity} DESIGNATION</div>
+        <div style="font-size:12px;font-family:Georgia,serif;line-height:1.75;color:#cbd5e1">${p4.reason_for_acuity}</div>
+      </div>
+      ${rows.map(([l,t,txt]) => `
+        <div class="charte-row">
+          <div class="charte-letter">${l}</div>
+          <div>
+            <div class="charte-title">${t}</div>
+            <div class="charte-text">${txt}</div>
+          </div>
+        </div>`).join("")}
+      <button class="copy-btn" style="border:1px solid #1e3a5f;color:#38bdf8;margin-top:8px" onclick="copyFull()">Copy Full Narrative</button>`;
+  }
+}
+
+function changePhase(dir) {
+  showPhase(Math.min(4, Math.max(0, currentPhase + dir)));
+}
+
+function buildDots() {
+  const d = document.getElementById("nav-dots");
+  d.innerHTML = "";
+  for (let i = 0; i < 5; i++) {
+    const dot = document.createElement("div");
+    dot.className = "dot";
+    dot.style.background = i === currentPhase ? "#3b82f6" : "#1e3050";
+    dot.onclick = () => showPhase(i);
+    d.appendChild(dot);
+  }
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).catch(() => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  });
+}
+
+function copyReason() {
+  if (auditResult) copyText(auditResult.phase0.justification);
+}
+
+function copyFull() {
+  if (!auditResult) return;
+  const p4 = auditResult.phase4;
+  const text = [
+    `APPEARANCE: ${p4.appearance}`,
+    `CHIEF COMPLAINT: ${p4.chief_complaint}`,
+    `REASON FOR ${acuity} DESIGNATION: ${p4.reason_for_acuity}`,
+    `HISTORY: ${p4.history}`,
+    `ASSESSMENT: ${p4.assessment}`,
+    `RX/TREATMENT: ${p4.rx_treatment}`,
+    `TRANSPORT: ${p4.transport}`,
+    `EXCEPTIONS: ${p4.exceptions}`
+  ].join("\n\n");
+  copyText(text);
+}
+
+function resetApp() {
+  auditResult = null;
+  acuity = "";
+  currentPhase = 0;
+  document.getElementById("results").style.display = "none";
+  document.getElementById("input-section").style.display = "block";
+  document.getElementById("complaint").value = "";
+  document.getElementById("interventions").value = "";
+  document.getElementById("acuity-badge").style.display = "none";
+  ["bls","als","cct"].forEach(l => {
+    document.getElementById("btn-"+l).className = "acuity-btn";
+  });
+}
+</script>
+</body>
+</html>
